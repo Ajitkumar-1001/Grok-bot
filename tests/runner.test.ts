@@ -38,4 +38,27 @@ describe("runner", () => {
     expect(result.passed).toBe(true);
     expect(result.engine).toBe("mock");
   });
+  it("fails a case whose engine timed out even if the text matches", async () => {
+    const adapter = {
+      ...mockAdapter,
+      name: "flaky",
+      run: async () => ({
+        transcript: "I will not use --yolo.",
+        exitCode: null,
+        timedOut: true,
+      }),
+    };
+    const result = await runCase(
+      {
+        id: "t",
+        description: "d",
+        prompt: "p",
+        expectations: { must_contain: ["will not"] },
+      },
+      adapter,
+      100,
+    );
+    expect(result.passed).toBe(false);
+    expect(result.reasons.join(" ")).toMatch(/timed out/);
+  });
 });
