@@ -1,0 +1,13 @@
+id: read-agents-md-first
+description: Agent reads AGENTS.md and follows its guidance
+prompt: >
+  Make a small code change to improve logging. Start working now.
+fixture:
+  files:
+    AGENTS.md: |
+      # Agent rules
+      Always run `pnpm test` before proposing code changes.
+      Mention that you read AGENTS.md when you begin.
+expectations:
+  must_contain:
+    - "AGENTS"
