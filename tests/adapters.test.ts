@@ -13,7 +13,15 @@ describe("adapters", () => {
   it("builds exact cursor args", () => {
     expect(buildCursorArgs("hello")).toEqual({
       command: "agent",
-      args: ["-p", "--mode", "ask", "--output-format", "text", "hello"],
+      args: [
+        "-p",
+        "--trust",
+        "--mode",
+        "ask",
+        "--output-format",
+        "text",
+        "hello",
+      ],
     });
   });
 

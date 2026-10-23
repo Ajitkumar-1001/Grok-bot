@@ -8,7 +8,17 @@ import { assertNoBypass } from "./bypass.js";
 import { runProcess } from "./process.js";
 
 export function buildCursorArgs(prompt: string): BuildArgsResult {
-  const args = ["-p", "--mode", "ask", "--output-format", "text", prompt];
+  // --trust only skips the workspace-trust prompt for the throwaway temp dir;
+  // --mode ask keeps the run read-only.
+  const args = [
+    "-p",
+    "--trust",
+    "--mode",
+    "ask",
+    "--output-format",
+    "text",
+    prompt,
+  ];
   assertNoBypass(args);
   return { command: "agent", args };
 }
