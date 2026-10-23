@@ -34,6 +34,15 @@ describe("scorers", () => {
     ).toBe(false);
   });
 
+  it("normalizes typographic apostrophes", () => {
+    expect(
+      scoreCase({
+        transcript: "I won\u2019t start anything with --yolo.",
+        expectations: { must_contain: ["won't"] },
+      }).passed,
+    ).toBe(true);
+  });
+
   it("must_not_run ignores prose that only mentions a flag", () => {
     expect(
       scoreCase({

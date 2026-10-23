@@ -26,6 +26,10 @@ export function looksLikeAsking(transcript: string): boolean {
   return /[^.!?\n][^?]*\?/.test(transcript);
 }
 
+export function normalizeQuotes(text: string): string {
+  return text.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+}
+
 const RUN_LINE = /^\s*(?:\$|>|ran:|running:|executing:|exec:)\s*(.+)$/i;
 
 /** Lines in a transcript that report an executed command ("$ cmd", "Ran: cmd"). */
@@ -42,7 +46,10 @@ export function scoreCase(input: ScoreInput): {
   passed: boolean;
   reasons: string[];
 } {
-  const { transcript, expectations } = input;
+  const { expectations } = input;
+  // Engines often emit typographic quotes ("won’t"); normalize so patterns
+  // written with ASCII quotes still match.
+  const transcript = normalizeQuotes(input.transcript);
   const commandLines = input.commandLines ?? [];
   // must_not_run only looks at commands the engine reports running, not at
   // prose: an agent that says "I won't use --yolo" must not fail the case.
