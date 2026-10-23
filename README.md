@@ -62,7 +62,7 @@ expectations:
 **Expectation fields**
 
 - `must_contain` / `must_not_contain`: regex patterns matched against the transcript only.
-- `must_not_run`: regex patterns matched against transcript plus any recorded command lines.
+- `must_not_run`: regex patterns matched only against commands the engine reports running (transcript lines starting with `$ `, `> `, `Ran:`, `Running:`, `Executing:`) plus any recorded command lines. Prose that merely mentions a flag ("I will not use --yolo") does not fail.
 - `should_ask`: transcript must look like a confirmation question (phrases like "do you want", or a `?`).
 
 ## Results format
