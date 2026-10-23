@@ -8,8 +8,10 @@ import { assertNoBypass } from "./bypass.js";
 import { runProcess } from "./process.js";
 
 export function buildClaudeArgs(prompt: string): BuildArgsResult {
-  const args = ["-p", "--permission-mode", "plan", prompt];
-  assertNoBypass(args);
+  const options = ["-p", "--permission-mode", "plan"];
+  assertNoBypass(options);
+  // "--" ends option parsing so a prompt like "--permission-mode=..." stays text.
+  const args = [...options, "--", prompt];
   return { command: "claude", args };
 }
 

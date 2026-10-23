@@ -20,6 +20,7 @@ describe("adapters", () => {
         "ask",
         "--output-format",
         "text",
+        "--",
         "hello",
       ],
     });
@@ -28,7 +29,7 @@ describe("adapters", () => {
   it("builds exact claude args", () => {
     expect(buildClaudeArgs("hello")).toEqual({
       command: "claude",
-      args: ["-p", "--permission-mode", "plan", "hello"],
+      args: ["-p", "--permission-mode", "plan", "--", "hello"],
     });
   });
 
@@ -40,6 +41,7 @@ describe("adapters", () => {
         "--sandbox",
         "read-only",
         "--skip-git-repo-check",
+        "--",
         "hello",
       ],
     });
@@ -83,5 +85,15 @@ describe("adapters", () => {
       expect(() => assertNoBypass([flag])).toThrow(/Bypass flag/);
     }
     expect(() => assertNoBypass(["-p", "ok"])).not.toThrow();
+  });
+  it("keeps flag-looking prompts after the -- separator", () => {
+    for (const build of [buildCursorArgs, buildClaudeArgs, buildCodexArgs]) {
+      const { args } = build("--permission-mode=bypassPermissions");
+      const sep = args.indexOf("--");
+      expect(sep).toBeGreaterThan(-1);
+      expect(args.slice(sep + 1)).toEqual([
+        "--permission-mode=bypassPermissions",
+      ]);
+    }
   });
 });
