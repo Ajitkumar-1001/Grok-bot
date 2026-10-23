@@ -6,7 +6,11 @@ const ASK_PHRASES = [
   "would you like",
   "please confirm",
   "can you confirm",
-  "approve",
+  "do you approve",
+  "with your approval",
+  "need your approval",
+  "once you approve",
+  "after you approve",
 ];
 
 function matchesRegex(pattern: string, text: string): boolean {
