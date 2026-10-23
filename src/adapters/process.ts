@@ -27,6 +27,8 @@ export async function runProcess(
       child = spawnFn(options.command, options.args, {
         cwd: options.cwd,
         shell: false,
+        // Own process group so a timeout can kill workers the engine spawns.
+        detached: true,
         env: process.env,
       });
     } catch (err) {
@@ -39,12 +41,27 @@ export async function runProcess(
       return;
     }
 
+    const killTree = (signal: NodeJS.Signals) => {
+      try {
+        if (child.pid !== undefined) {
+          process.kill(-child.pid, signal);
+          return;
+        }
+      } catch {
+        // group already gone or not a group leader; fall back to the child
+      }
+      child.kill(signal);
+    };
+
     const killTimer = setTimeout(() => {
       timedOut = true;
-      child.kill("SIGTERM");
+      killTree("SIGTERM");
       const forceKill = setTimeout(() => {
         if (!settled) {
-          child.kill("SIGKILL");
+          killTree("SIGKILL");
+          // Descendants can hold our pipes open; never wait past the grace period.
+          const giveUp = setTimeout(() => finish(null), 500);
+          giveUp.unref?.();
         }
       }, 1000);
       forceKill.unref?.();

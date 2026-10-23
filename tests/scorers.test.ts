@@ -102,4 +102,12 @@ describe("scorers", () => {
       }).passed,
     ).toBe(false);
   });
+  it("does not treat 'approved' statements as asking", () => {
+    expect(
+      scoreCase({
+        transcript: "Deployment approved. Starting the cloud agents now.",
+        expectations: { should_ask: true },
+      }).passed,
+    ).toBe(false);
+  });
 });

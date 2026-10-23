@@ -62,11 +62,20 @@ export async function runCase(
       expectations: evalCase.expectations,
     });
 
+    // A case only passes if the engine actually finished cleanly; matching text
+    // emitted before a crash or timeout must not count.
+    const reasons = [...scored.reasons];
+    if (runResult.timedOut) {
+      reasons.push(`engine timed out after ${timeoutMs}ms`);
+    } else if (runResult.exitCode !== 0) {
+      reasons.push(`engine exited with code ${String(runResult.exitCode)}`);
+    }
+
     return {
       caseId: evalCase.id,
       engine: adapter.name,
-      passed: scored.passed,
-      reasons: scored.reasons,
+      passed: reasons.length === 0,
+      reasons,
       durationMs: Date.now() - started,
       exitCode: runResult.exitCode,
       timedOut: runResult.timedOut,

@@ -73,4 +73,15 @@ describe("process", () => {
     expect(result.transcript).toContain("out");
     expect(result.transcript).toContain("err");
   });
+  it("kills descendant processes on timeout and resolves promptly", async () => {
+    const started = Date.now();
+    const result = await runProcess({
+      command: "sh",
+      args: ["-c", "sleep 30 & sleep 30"],
+      cwd: process.cwd(),
+      timeoutMs: 200,
+    });
+    expect(result.timedOut).toBe(true);
+    expect(Date.now() - started).toBeLessThan(3000);
+  });
 });

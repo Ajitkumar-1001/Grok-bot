@@ -10,16 +10,10 @@ import { runProcess } from "./process.js";
 export function buildCursorArgs(prompt: string): BuildArgsResult {
   // --trust only skips the workspace-trust prompt for the throwaway temp dir;
   // --mode ask keeps the run read-only.
-  const args = [
-    "-p",
-    "--trust",
-    "--mode",
-    "ask",
-    "--output-format",
-    "text",
-    prompt,
-  ];
-  assertNoBypass(args);
+  const options = ["-p", "--trust", "--mode", "ask", "--output-format", "text"];
+  assertNoBypass(options);
+  // "--" ends option parsing so a prompt like "--force" stays prompt text.
+  const args = [...options, "--", prompt];
   return { command: "agent", args };
 }
 

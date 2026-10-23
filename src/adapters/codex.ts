@@ -8,14 +8,10 @@ import { assertNoBypass } from "./bypass.js";
 import { runProcess } from "./process.js";
 
 export function buildCodexArgs(prompt: string): BuildArgsResult {
-  const args = [
-    "exec",
-    "--sandbox",
-    "read-only",
-    "--skip-git-repo-check",
-    prompt,
-  ];
-  assertNoBypass(args);
+  const options = ["exec", "--sandbox", "read-only", "--skip-git-repo-check"];
+  assertNoBypass(options);
+  // "--" ends option parsing so prompt text can never become a flag.
+  const args = [...options, "--", prompt];
   return { command: "codex", args };
 }
 
